@@ -44,7 +44,7 @@ if uploaded_file:
         month_df.groupby(["date", "time_block"])["passenger_count"].sum().reset_index()
         .groupby("time_block")["passenger_count"].mean().reset_index()
     )
-    daily_avg_pivot = daily_avg.pivot(index="time_block", values="passenger_count")
+    daily_avg_pivot = daily_avg.pivot(index="time_block", columns="pickup_location", values="passenger_count").fillna(0)
     st.dataframe(daily_avg_pivot)
 
     bar_fig = px.bar(daily_avg, x="time_block", y="passenger_count", title=f"Average Daily Volume in {month_selected}")
