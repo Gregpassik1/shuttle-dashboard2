@@ -1,14 +1,7 @@
 
 import pandas as pd
-import numpy as np
 
-def optimize_schedule(df, shuttle_capacity=14, max_wait_minutes=15):
-    df["date"] = pd.to_datetime(df["date"])
-    df["day_of_week"] = df["date"].dt.day_name()
-
-    demand = df.groupby(["day_of_week", "time_block"])["passenger_count"].sum().reset_index()
-    demand["required_shuttles"] = np.ceil(demand["passenger_count"] / shuttle_capacity).astype(int)
-    demand["note"] = demand["required_shuttles"].apply(
-        lambda x: "OK" if x <= 4 else "Consider adding shuttle"
-    )
-    return demand
+def optimize_schedule(df):
+    avg_by_block = df.groupby("time_block")["passenger_count"].mean().reset_index()
+    avg_by_block["shuttles_needed"] = (avg_by_block["passenger_count"] / 14).apply(lambda x: max(1, round(x)))
+    return avg_by_block
